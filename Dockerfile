@@ -57,13 +57,13 @@ RUN git clone https://github.com/ashleykleynhans/app-manager.git /app-manager &&
 COPY app-manager/config.json /app-manager/public/config.json
 
 # Install Server Status API
-RUN pip install poetry
 WORKDIR /
 ARG SERVER_STATUS_API_VERSION
 
 # Clone the repo and install with Poetry into a fixed venv location
 RUN git clone https://github.com/amrtokk/server_status_api.git /server_status_api && \
     cd /server_status_api && \
+    pip install poetry && \
     poetry config virtualenvs.in-project false && \
     poetry config virtualenvs.path /workspace/venvs && \
     poetry install --no-interaction --no-ansi
