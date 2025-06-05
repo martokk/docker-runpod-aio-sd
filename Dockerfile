@@ -61,7 +61,7 @@ WORKDIR /
 ARG SERVER_STATUS_API_VERSION
 
 # Clone the repo and install with Poetry into a fixed venv location
-RUN git clone https://github.com/amrtokk/server_status_api.git /server_status_api && \
+RUN git clone https://github.com/martokk/server_status_api.git /server_status_api && \
     cd /server_status_api && \
     pip install poetry && \
     poetry config virtualenvs.in-project false && \
