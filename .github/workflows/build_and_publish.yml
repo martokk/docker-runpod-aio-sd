@@ -54,15 +54,17 @@ jobs:
       #       ghcr.io/martokk/server_status_api:latest
       #     push: ${{ github.ref == 'refs/heads/main' }}
 
-      # Replace the build-push-action with docker buildx bake
-      - name: Build and push using docker buildx bake
-        id: bake
-        run: |
-          # Enable BuildKit debug logs
-          export BUILDKIT_PROGRESS=plain
-          docker buildx bake -f docker-bake.hcl --push
-        # Only push if we're on main branch
-        if: github.ref == 'refs/heads/main'
+      # The existing 'docker buildx bake' run step is replaced by the action below
+      - name: Build and Push with docker-bake.hcl
+        id: bake # You can keep 'bake' or use another id like 'docker_build'
+        uses: docker/build-push-action@v5 # Using a recent version of the action
+        env:
+          BUILDKIT_PROGRESS: plain # Ensures verbose build output similar to your run step
+        with:
+          bake: ./docker-bake.hcl
+          push: ${{ github.ref == 'refs/heads/main' }}
+          # The action will build and cache on PRs (when push is false)
+          # and build and push on merges to main (when push is true).
 
       - name: Create Deployment
         if: github.ref == 'refs/heads/main' && success()
