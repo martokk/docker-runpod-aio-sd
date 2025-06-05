@@ -1,0 +1,31 @@
+version: "3.8"
+
+services:
+  stable-diffusion-docker:
+    image: martokk/stable-diffusion-docker:latest
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+    volumes:
+      - /workspace:/workspace
+    ports:
+      - "3000:3001"
+      - "3010:3011"
+      - "3020:3021"
+      - "6006:6066"
+      - "8888:8888"
+      - "5001:5001"
+    environment:
+      JUPYTER_PASSWORD: "Jup1t3R!"
+      START_A1111: "1"
+      START_KOHYA: "1"
+      START_COMFYUI: "1"
+      START_INVOKEAI: "1"
+      START_JUPYTER: "1"
+      START_TENSORBOARD: "1"
+      START_SERVER_STATUS_API: "1"
+    restart: unless-stopped
