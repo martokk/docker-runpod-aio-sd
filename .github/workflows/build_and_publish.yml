@@ -62,6 +62,7 @@ jobs:
           BUILDKIT_PROGRESS: plain # Ensures verbose build output similar to your run step
         with:
           bake: ./docker-bake.hcl
+          targets: default # Explicitly specify the bake target(s) to build
           push: ${{ github.ref == 'refs/heads/main' }}
           # The action will build and cache on PRs (when push is false)
           # and build and push on merges to main (when push is true).
