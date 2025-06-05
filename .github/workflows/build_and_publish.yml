@@ -45,27 +45,11 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      # - name: Build image and push to GitHub Container Registry
-      #   id: docker_build
-      #   uses: docker/build-push-action@v2
-      #   with:
-      #     context: ./
-      #     tags: |
-      #       ghcr.io/martokk/server_status_api:latest
-      #     push: ${{ github.ref == 'refs/heads/main' }}
-
-      # The existing 'docker buildx bake' run step is replaced by the action below
+      # The 'docker/build-push-action' step was replaced by a direct 'run' command
+      # to work around an issue where the runner was not recognizing the 'bake' input.
       - name: Build and Push with docker-bake.hcl
-        id: docker_build # You can keep 'bake' or use another id like 'docker_build'
-        uses: docker/build-push-action@v5.3.0 # Using a recent version of the action
-        env:
-          BUILDKIT_PROGRESS: plain # Ensures verbose build output similar to your run step
-        with:
-          bake: ./docker-bake.hcl
-          targets: default # Explicitly specify the bake target(s) to build
-          push: ${{ github.ref == 'refs/heads/main' }}
-          # The action will build and cache on PRs (when push is false)
-          # and build and push on merges to main (when push is true).
+        run: |
+          docker buildx bake --file ./docker-bake.hcl default ${{ github.ref == 'refs/heads/main' && '--push' || '' }}
 
       - name: Create Deployment
         if: github.ref == 'refs/heads/main' && success()
