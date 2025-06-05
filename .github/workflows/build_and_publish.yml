@@ -14,9 +14,29 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
+      # Add disk space cleanup step
+      - name: Free disk space
+        run: |
+          echo "Initial disk space:"
+          df -h
+          sudo rm -rf /usr/share/dotnet
+          sudo rm -rf /usr/local/lib/android
+          sudo rm -rf /opt/ghc
+          sudo rm -rf /opt/hostedtoolcache
+          echo "Disk space after cleanup:"
+          df -h
+
       - name: Set up Docker Buildx
         id: buildx
         uses: docker/setup-buildx-action@v2
+        with:
+          # Add buildx configuration to clean up after each build
+          buildkitd-flags: --debug
+          driver-opts: |
+            image=moby/buildkit:latest
+            network=host
+            env.BUILDKIT_STEP_LOG_MAX_SIZE=-1
+            env.BUILDKIT_STEP_LOG_MAX_SPEED=-1
 
       - name: Login to Github Packages
         uses: docker/login-action@v2
@@ -38,6 +58,8 @@ jobs:
       - name: Build and push using docker buildx bake
         id: bake
         run: |
+          # Enable BuildKit debug logs
+          export BUILDKIT_PROGRESS=plain
           docker buildx bake -f docker-bake.hcl --push
         # Only push if we're on main branch
         if: github.ref == 'refs/heads/main'

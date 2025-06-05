@@ -10,7 +10,9 @@ ENV DEBIAN_FRONTEND=noninteractive \
 # Install Ubuntu packages
 ARG PYTHON_VERSION
 COPY --chmod=755 build/packages.sh /packages.sh
-RUN /packages.sh && rm /packages.sh
+RUN /packages.sh && rm /packages.sh && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
 
 # Install Torch and xformers
 ARG INDEX_URL
