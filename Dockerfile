@@ -1,4 +1,4 @@
-### Stage 1: Base ### =================================================================================
+### Base ### =================================================================================
 FROM nvidia/cuda:12.4.1-cudnn-devel-ubuntu22.04 AS base
 
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
@@ -23,26 +23,12 @@ RUN pip3 install --no-cache-dir torch==${TORCH_VERSION} torchvision torchaudio -
     pip3 install --no-cache-dir xformers==${XFORMERS_VERSION} --index-url ${INDEX_URL}
 
 
-### Stage 2: Install Base Aplications ### ================================================================
+### A1111 Builder ### ========================================================================
+FROM base AS a1111
 WORKDIR /
 
-# Pre-Install: Copy the build scripts and application files
+# Copy all build scripts
 COPY --chmod=755 build/* ./
-COPY code-server/vsix/*.vsix /tmp/
-COPY code-server/settings.json /root/.local/share/code-server/User/settings.json
-
-# Install: Apps
-ARG RUNPODCTL_VERSION
-ENV RUNPODCTL_VERSION=${RUNPODCTL_VERSION}
-ARG APP_MANAGER_VERSION
-RUN /apps.sh && rm /apps.sh
-
-# Post-Install: Copy app files
-COPY app-manager/config.json /app-manager/public/config.json
-
-
-### Stage 3: Install A1111 ### ========================================================================
-WORKDIR /
 
 # Install: A1111
 ARG TORCH_VERSION
@@ -51,7 +37,7 @@ ARG INDEX_URL
 ARG WEBUI_VERSION
 ARG CONTROLNET_COMMIT
 ARG CIVITAI_BROWSER_PLUS_VERSION
-RUN /install.sh
+RUN /install.sh && rm /install.sh
 
 # Post-Install:
 # Install CivitAI Model Downloader
@@ -71,8 +57,12 @@ COPY a1111/relauncher.py a1111/webui-user.sh a1111/config.json a1111/ui-config.j
 ADD https://raw.githubusercontent.com/Douleb/SDXL-750-Styles-GPT4-/main/styles.csv /stable-diffusion-webui/styles.csv
 
 
-### Stage 4: Install InvokeAI ### =====================================================================
+### InvokeAI Builder ### =====================================================================
+FROM base AS invokeai
 WORKDIR /
+
+# Copy all build scripts
+COPY --chmod=755 build/* ./
 
 # Install: InvokeAI
 ARG INDEX_URL
@@ -85,10 +75,14 @@ RUN /install_invokeai.sh && rm /install_invokeai.sh
 COPY invokeai/invokeai.yaml /InvokeAI/
 
 
-### Stage 5: Install Kohya_ss ### =====================================================================
+### Kohya_ss Builder ### =====================================================================
+FROM base AS kohya_ss
 WORKDIR /
 
-# Pre-Install: Copy the build scripts and application files
+# Copy all build scripts
+COPY --chmod=755 build/* ./
+
+# Pre-Install: Copy the application files
 COPY kohya_ss/requirements* ./
 
 # Install: Kohya_ss
@@ -100,8 +94,12 @@ RUN /install_kohya.sh && rm /install_kohya.sh
 # Post-Install: Copy the accelerate configuration
 COPY kohya_ss/accelerate.yaml ./
 
-### Stage 7: Install ComfyUI ### =====================================================================
+### ComfyUI Builder ### =====================================================================
+FROM base AS comfyui
 WORKDIR /
+
+# Copy all build scripts
+COPY --chmod=755 build/* ./
 
 # Install: ComfyUI
 ARG COMFYUI_COMMIT
@@ -113,23 +111,45 @@ RUN /install_comfyui.sh && rm /install_comfyui.sh
 COPY comfyui/extra_model_paths.yaml /ComfyUI/
 
 
-### Stage 8: Install Tensorboard ### ==================================================================
+
+### Final Image ### =======================================================================
+FROM base
+
+### Install Base Aplications ###
 WORKDIR /
+
+# Pre-Install: Copy the build scripts and application files
+COPY --chmod=755 build/* ./
+COPY code-server/vsix/*.vsix /tmp/
+COPY code-server/settings.json /root/.local/share/code-server/User/settings.json
+
+# Install: Apps
+ARG RUNPODCTL_VERSION
+ENV RUNPODCTL_VERSION=${RUNPODCTL_VERSION}
+ARG APP_MANAGER_VERSION
+RUN /apps.sh && rm /apps.sh
+
+# Post-Install: Copy app files
+COPY app-manager/config.json /app-manager/public/config.json
 
 # Install: Tensorboard
 RUN /install_tensorboard.sh && rm /install_tensorboard.sh
 
-### Stage 9: Finalise Image ### =======================================================================
+### Copy Applications From Builder Stages ###
+# Note: You may need to adjust the source paths if your install scripts place files elsewhere.
+COPY --from=a1111 /stable-diffusion-webui/ /stable-diffusion-webui/
+COPY --from=invokeai /InvokeAI/ /InvokeAI/
+COPY --from=kohya_ss /kohya_ss/ /kohya_ss/
+COPY --from=kohya_ss /accelerate.yaml /
+COPY --from=comfyui /ComfyUI/ /ComfyUI/
 
+### Finalise Image ###
 # Remove existing SSH host keys
 RUN rm -f /etc/ssh/ssh_host_*
 
 # NGINX Proxy
 COPY nginx/nginx.conf /etc/nginx/nginx.conf
 COPY nginx/502.html /usr/share/nginx/html/502.html
-
-# Application Manager config
-COPY app-manager/config.json /app-manager/public/config.json
 
 # Set template version
 ARG RELEASE
@@ -141,11 +161,11 @@ ENV VENV_PATH=${VENV_PATH}
 
 # Copy the scripts
 WORKDIR /
-COPY --chmod=755 scripts/* ./
-RUN mv /manage_venv.sh /usr/local/bin/manage_venv
+COPY --chmod=755 scripts/* ./scripts/
+RUN mv /scripts/manage_venv.sh /usr/local/bin/manage_venv
 
 # Start the container
 ARG REQUIRED_CUDA_VERSION
 ENV REQUIRED_CUDA_VERSION=${REQUIRED_CUDA_VERSION}
 SHELL ["/bin/bash", "--login", "-c"]
-CMD [ "/start.sh" ]
+CMD [ "/scripts/start.sh" ]

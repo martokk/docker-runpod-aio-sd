@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+echo "PRE-START: Running pre-start script..."
+
 export PYTHONUNBUFFERED=1
 export APP="stable-diffusion-webui"
 
@@ -191,29 +193,31 @@ npm start >/workspace/logs/app-manager.log 2>&1 &
 # fi
 
 if [ ${START_SERVER_STATUS_API} ]; then
-    /start_server_status_api.sh
+    /workspace/scripts/start_server_status_api.sh
 fi
 
 if [ ${START_JUPYTER} ]; then
-    /start_jupyter.sh
+    /workspace/scripts/start_jupyter.sh
 fi
 
 if [ ${START_TENSORBOARD} ]; then
-    /start_tensorboard.sh
+    /workspace/scripts/start_tensorboard.sh
 fi
 
 if [ ${START_A1111} ]; then
-    /start_a1111.sh
+    /workspace/scripts/start_a1111.sh
 fi
 
 if [ ${START_KOHYA} ]; then
-    /start_kohya.sh
+    /workspace/scripts/start_kohya.sh
 fi
 
 if [ ${START_COMFYUI} ]; then
-    /start_comfyui.sh
+    /workspace/scripts/start_comfyui.sh
 fi
 
 if [ ${START_INVOKEAI} ]; then
-    /start_invokeai.sh
+    /workspace/scripts/start_invokeai.sh
 fi
+
+echo "PRE-START: Done"
