@@ -163,6 +163,7 @@ fi
 sed -i "s|venv_dir=VENV_PATH|venv_dir=\"${VENV_PATH}\"|" /workspace/stable-diffusion-webui/webui-user.sh
 
 # Start application manager
+echo "PRE-START: Starting application manager"
 cd /app-manager
 npm start >/workspace/logs/app-manager.log 2>&1 &
 
@@ -193,30 +194,37 @@ npm start >/workspace/logs/app-manager.log 2>&1 &
 # fi
 
 if [ ${START_SERVER_STATUS_API} ]; then
+    echo "PRE-START: Launching server status API"
     /workspace/scripts/start_server_status_api.sh
 fi
 
 if [ ${START_JUPYTER} ]; then
+    echo "PRE-START: Launching Jupyter"
     /workspace/scripts/start_jupyter.sh
 fi
 
 if [ ${START_TENSORBOARD} ]; then
+    echo "PRE-START: Launching TensorBoard"
     /workspace/scripts/start_tensorboard.sh
 fi
 
 if [ ${START_A1111} ]; then
+    echo "PRE-START: Launching A1111"
     /workspace/scripts/start_a1111.sh
 fi
 
 if [ ${START_KOHYA} ]; then
+    echo "PRE-START: Launching Kohya"
     /workspace/scripts/start_kohya.sh
 fi
 
 if [ ${START_COMFYUI} ]; then
+    echo "PRE-START: Launching ComfyUI"
     /workspace/scripts/start_comfyui.sh
 fi
 
 if [ ${START_INVOKEAI} ]; then
+    echo "PRE-START: Launching InvokeAI"
     /workspace/scripts/start_invokeai.sh
 fi
 

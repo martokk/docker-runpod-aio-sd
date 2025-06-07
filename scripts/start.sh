@@ -274,11 +274,23 @@ start_code_server
 #check_cuda_version
 #test_pytorch_cuda
 start_runpod_uploader
-execute_script "/workspace/scripts/pre_start.sh" "PRE-START: Running pre-start script..."
+export_env_vars
+
+if [ -f "/workspace/scripts/pre_start.sh" ]; then
+    execute_script "/workspace/scripts/pre_start.sh" "PRE-START: Running pre-start script..."
+else
+    execute_script "/scripts/pre_start.sh" "PRE-START: Running pre-start script..."
+fi
+
 configure_filezilla
 update_rclone
 check_python_version
-export_env_vars
-execute_script "/workspace/scripts/post_start.sh" "POST-START: Running post-start script..."
+
+if [ -f "/workspace/scripts/post_start.sh" ]; then
+    execute_script "/workspace/scripts/post_start.sh" "POST-START: Running post-start script..."
+else
+    execute_script "/scripts/post_start.sh" "POST-START: Running post-start script..."
+fi
+
 echo "Container is READY!"
 sleep infinity

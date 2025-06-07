@@ -138,9 +138,11 @@ RUN /install_tensorboard.sh && rm /install_tensorboard.sh
 ### Copy Applications From Builder Stages ###
 # Note: You may need to adjust the source paths if your install scripts place files elsewhere.
 COPY --from=a1111 /stable-diffusion-webui/ /stable-diffusion-webui/
+COPY --from=a1111 /venv/ /venv/
 COPY --from=invokeai /InvokeAI/ /InvokeAI/
 COPY --from=kohya_ss /kohya_ss/ /kohya_ss/
 COPY --from=kohya_ss /accelerate.yaml /
+COPY --from=kohya_ss /venvs/ /venvs/
 COPY --from=comfyui /ComfyUI/ /ComfyUI/
 
 ### Finalise Image ###
@@ -161,11 +163,12 @@ ENV VENV_PATH=${VENV_PATH}
 
 # Copy the scripts
 WORKDIR /
-COPY --chmod=755 scripts/* ./scripts/
-RUN mv /scripts/manage_venv.sh /usr/local/bin/manage_venv
+COPY --chmod=755 scripts/* /
+COPY --chmod=755 scripts/* /scripts/
+# RUN mv /scripts/manage_venv.sh /usr/local/bin/manage_venv
 
 # Start the container
 ARG REQUIRED_CUDA_VERSION
 ENV REQUIRED_CUDA_VERSION=${REQUIRED_CUDA_VERSION}
 SHELL ["/bin/bash", "--login", "-c"]
-CMD [ "/scripts/start.sh" ]
+CMD [ "/start.sh" ]
