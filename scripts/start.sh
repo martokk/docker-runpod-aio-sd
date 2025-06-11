@@ -156,7 +156,7 @@ start_jupyter() {
     cd / &&
         nohup jupyter lab --allow-root \
             --no-browser \
-            --port=8888 \
+            --port=2010 \
             --ip=* \
             --FileContentsManager.delete_to_trash=False \
             --ContentsManager.allow_hidden=True \
@@ -172,7 +172,7 @@ start_code_server() {
     echo "CODE-SERVER: Starting Code Server..."
     mkdir -p /workspace/logs
     nohup code-server \
-        --bind-addr 0.0.0.0:7777 \
+        --bind-addr 0.0.0.0:2000 \
         --auth none \
         --enable-proposed-api true \
         --disable-telemetry \
@@ -180,11 +180,11 @@ start_code_server() {
     echo "CODE-SERVER: Code Server started"
 }
 
-start_runpod_uploader() {
-    echo "RUNPOD-UPLOADER: Starting RunPod Uploader..."
-    nohup /usr/local/bin/runpod-uploader &>/workspace/logs/runpod-uploader.log &
-    echo "RUNPOD-UPLOADER: RunPod Uploader started"
-}
+# start_runpod_uploader() {
+#     echo "RUNPOD-UPLOADER: Starting RunPod Uploader..."
+#     nohup /usr/local/bin/runpod-uploader &>/workspace/logs/runpod-uploader.log &
+#     echo "RUNPOD-UPLOADER: RunPod Uploader started"
+# }
 
 configure_filezilla() {
     # Only proceed if there is a public IP
@@ -273,7 +273,7 @@ start_jupyter
 start_code_server
 #check_cuda_version
 #test_pytorch_cuda
-start_runpod_uploader
+#start_runpod_uploader
 export_env_vars
 
 if [ -f "/workspace/scripts/pre_start.sh" ]; then

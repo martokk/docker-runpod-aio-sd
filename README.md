@@ -134,7 +134,7 @@ docker run -d \
 
 You can obviously substitute the image name and tag with your own.
 
-### Ports
+### Ports (OLD)
 
 | Connect Port | Internal Port | Description                   |
 |--------------|---------------|-------------------------------|
@@ -148,6 +148,20 @@ You can obviously substitute the image name and tag with your own.
 | 8888         | 8888          | Jupyter Lab                   |
 | 2999         | 2999          | RunPod File Uploader          |
 
+### Ports (NEW)
+
+| Connect Port | Internal Port | Description                   |
+|--------------|---------------|-------------------------------|
+| 1000         | 5001          | Risa Playground               |
+| 2000         | 2000          | Code Server                   |
+| 2010         | 2010          | Jupyter Lab                   |
+| 3000         | 3001          | A1111 Stable Diffusion Web UI |
+| 3010         | 3011          | Kohya_ss                      |
+| 3020         | 3021          | ComfyUI                       |
+| 3030         | 3031          | InvokeAI                      |
+| 8000         | 8001          | Tensorboard                   |
+| 9999         | 9999          | WebDAV                        |
+
 ### Environment Variables
 
 | Variable             | Description                                      | Default                |
@@ -156,7 +170,8 @@ You can obviously substitute the image name and tag with your own.
 | JUPYTER_LAB_PASSWORD | Set a password for Jupyter lab                   | not set - no password  |
 | DISABLE_AUTOLAUNCH   | Disable Web UIs from launching automatically     | (not set)              |
 | DISABLE_SYNC         | Disable syncing if using a RunPod network volume | (not set)              |
-| ENABLE_TENSORBOARD   | Enables Tensorboard on port 6006                 | enabled                |
+| START_TENSORBOARD    | Enables Tensorboard on port 8000                 | enabled                |
+| START_WEBDAV         | Enables WebDAV on port 9999                       | enabled                |
 
 ## Logs
 
