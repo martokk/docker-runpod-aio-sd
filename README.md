@@ -153,13 +153,14 @@ You can obviously substitute the image name and tag with your own.
 | Connect Port | Internal Port | Description                   |
 |--------------|---------------|-------------------------------|
 | 1000         | 5001          | Risa Playground               |
+| 8000         | 8000          | App Manager (REMOVE)          |
 | 2000         | 2000          | Code Server                   |
 | 2010         | 2010          | Jupyter Lab                   |
 | 3000         | 3001          | A1111 Stable Diffusion Web UI |
 | 3010         | 3011          | Kohya_ss                      |
 | 3020         | 3021          | ComfyUI                       |
 | 3030         | 3031          | InvokeAI                      |
-| 8000         | 8001          | Tensorboard                   |
+| 8010         | 8011          | Tensorboard                   |
 | 9999         | 9999          | WebDAV                        |
 
 ### Environment Variables
