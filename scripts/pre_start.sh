@@ -198,6 +198,11 @@ if [ ${START_SERVER_STATUS_API} ]; then
     /workspace/scripts/start_server_status_api.sh
 fi
 
+if [ ${START_WEBDAV} ]; then
+    echo "PRE-START: Launching WebDAV"
+    /workspace/scripts/start_webdav.sh
+fi
+
 if [ ${START_JUPYTER} ]; then
     echo "PRE-START: Launching Jupyter"
     /workspace/scripts/start_jupyter.sh

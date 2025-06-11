@@ -135,6 +135,9 @@ COPY app-manager/config.json /app-manager/public/config.json
 # Install: Tensorboard
 RUN /install_tensorboard.sh && rm /install_tensorboard.sh
 
+# Install: WebDAV
+RUN /install_webdav.sh && rm /install_webdav.sh
+
 ### Copy Applications From Builder Stages ###
 # Note: You may need to adjust the source paths if your install scripts place files elsewhere.
 COPY --from=a1111 /stable-diffusion-webui/ /stable-diffusion-webui/
