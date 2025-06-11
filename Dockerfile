@@ -1,4 +1,4 @@
-# Stage 1: Base
+### Base ### =================================================================================
 FROM nvidia/cuda:12.4.1-cudnn-devel-ubuntu22.04 AS base
 
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
@@ -22,52 +22,24 @@ ARG XFORMERS_VERSION
 RUN pip3 install --no-cache-dir torch==${TORCH_VERSION} torchvision torchaudio --index-url ${INDEX_URL} && \
     pip3 install --no-cache-dir xformers==${XFORMERS_VERSION} --index-url ${INDEX_URL}
 
-# Stage 2: Install applications
-FROM base AS setup
 
-# Install apps
-ARG RUNPODCTL_VERSION
-ENV RUNPODCTL_VERSION=${RUNPODCTL_VERSION}
-COPY code-server/vsix/*.vsix /tmp/
-COPY code-server/settings.json /root/.local/share/code-server/User/settings.json
-COPY --chmod=755 build/apps.sh /apps.sh
-RUN /apps.sh && rm /apps.sh
-
-# Copy the build scripts
+### A1111 Builder ### ========================================================================
+FROM base AS a1111
 WORKDIR /
+
+# Copy all build scripts
 COPY --chmod=755 build/* ./
 
-# Install A1111
+# Install: A1111
 ARG TORCH_VERSION
 ARG XFORMERS_VERSION
 ARG INDEX_URL
 ARG WEBUI_VERSION
 ARG CONTROLNET_COMMIT
 ARG CIVITAI_BROWSER_PLUS_VERSION
+RUN /install.sh && rm /install.sh
 
-RUN /install.sh
-
-# Install Application Manager
-WORKDIR /
-ARG APP_MANAGER_VERSION
-RUN git clone https://github.com/ashleykleynhans/app-manager.git /app-manager && \
-    cd /app-manager && \
-    git checkout tags/${APP_MANAGER_VERSION} && \
-    npm install
-COPY app-manager/config.json /app-manager/public/config.json
-
-# Install Server Status API
-WORKDIR /
-ARG SERVER_STATUS_API_VERSION
-
-# Clone the repo and install with Poetry into a fixed venv location
-RUN git clone https://github.com/martokk/server_status_api.git /server_status_api && \
-    cd /server_status_api && \
-    pip install poetry && \
-    poetry config virtualenvs.in-project false && \
-    poetry config virtualenvs.path /workspace/venvs && \
-    poetry install --no-interaction --no-ansi
-
+# Post-Install:
 # Install CivitAI Model Downloader
 ARG CIVITAI_DOWNLOADER_VERSION
 RUN git clone https://github.com/ashleykleynhans/civitai-downloader.git && \
@@ -85,65 +57,104 @@ COPY a1111/relauncher.py a1111/webui-user.sh a1111/config.json a1111/ui-config.j
 ADD https://raw.githubusercontent.com/Douleb/SDXL-750-Styles-GPT4-/main/styles.csv /stable-diffusion-webui/styles.csv
 
 
-# Install InvokeAI
-ARG INDEX_URL
+### InvokeAI Builder ### =====================================================================
+FROM base AS invokeai
+WORKDIR /
 
-# Stage 2: InvokeAI Installation
-FROM base AS invokeai-install
+# Copy all build scripts
+COPY --chmod=755 build/* ./
+
+# Install: InvokeAI
+ARG INDEX_URL
 ARG INVOKEAI_VERSION
 ARG INVOKEAI_TORCH_VERSION
 ARG INVOKEAI_XFORMERS_VERSION
-WORKDIR /
-COPY --chmod=755 build/install_invokeai.sh ./
 RUN /install_invokeai.sh && rm /install_invokeai.sh
 
-# Copy InvokeAI config file
+# Post-Install: Copy InvokeAI config file
 COPY invokeai/invokeai.yaml /InvokeAI/
 
-# Install Kohya_ss
-FROM invokeai-install AS kohya-install
+
+### Kohya_ss Builder ### =====================================================================
+FROM base AS kohya_ss
+WORKDIR /
+
+# Copy all build scripts
+COPY --chmod=755 build/* ./
+
+# Pre-Install: Copy the application files
+COPY kohya_ss/requirements* ./
+
+# Install: Kohya_ss
 ARG KOHYA_VERSION
 ARG KOHYA_TORCH_VERSION
 ARG KOHYA_XFORMERS_VERSION
-WORKDIR /
-COPY kohya_ss/requirements* ./
-COPY --chmod=755 build/install_kohya.sh ./
 RUN /install_kohya.sh && rm /install_kohya.sh
 
-# Copy the accelerate configuration
+# Post-Install: Copy the accelerate configuration
 COPY kohya_ss/accelerate.yaml ./
 
-# Install ComfyUI
-FROM kohya-install AS comfyui-install
+### ComfyUI Builder ### =====================================================================
+FROM base AS comfyui
+WORKDIR /
+
+# Copy all build scripts
+COPY --chmod=755 build/* ./
+
+# Install: ComfyUI
 ARG COMFYUI_COMMIT
 ARG COMFYUI_TORCH_VERSION
 ARG COMFYUI_XFORMERS_VERSION
-WORKDIR /
-COPY --chmod=755 build/install_comfyui.sh ./
 RUN /install_comfyui.sh && rm /install_comfyui.sh
 
-# Copy ComfyUI Extra Model Paths (to share models with A1111)
+# Post-Install:Copy ComfyUI Extra Model Paths (to share models with A1111)
 COPY comfyui/extra_model_paths.yaml /ComfyUI/
 
-# Install Tensorboard
-FROM comfyui-install AS tensorboard-install
+
+
+### Final Image ### =======================================================================
+FROM base
+
+### Install Base Aplications ###
 WORKDIR /
-COPY --chmod=755 build/install_tensorboard.sh ./
+
+# Pre-Install: Copy the build scripts and application files
+COPY --chmod=755 build/* ./
+COPY code-server/vsix/*.vsix /tmp/
+COPY code-server/settings.json /root/.local/share/code-server/User/settings.json
+
+# Install: Apps
+ARG RUNPODCTL_VERSION
+ENV RUNPODCTL_VERSION=${RUNPODCTL_VERSION}
+ARG APP_MANAGER_VERSION
+RUN /apps.sh && rm /apps.sh
+
+# Post-Install: Copy app files
+COPY app-manager/config.json /app-manager/public/config.json
+
+# Install: Tensorboard
 RUN /install_tensorboard.sh && rm /install_tensorboard.sh
 
-# Finalise Image
-FROM tensorboard-install AS final
+# Install: WebDAV
+RUN /install_webdav.sh && rm /install_webdav.sh
 
+### Copy Applications From Builder Stages ###
+# Note: You may need to adjust the source paths if your install scripts place files elsewhere.
+COPY --from=a1111 /stable-diffusion-webui/ /stable-diffusion-webui/
+COPY --from=a1111 /venv/ /venv/
+COPY --from=invokeai /InvokeAI/ /InvokeAI/
+COPY --from=kohya_ss /kohya_ss/ /kohya_ss/
+COPY --from=kohya_ss /accelerate.yaml /
+COPY --from=kohya_ss /venvs/ /venvs/
+COPY --from=comfyui /ComfyUI/ /ComfyUI/
 
+### Finalise Image ###
 # Remove existing SSH host keys
 RUN rm -f /etc/ssh/ssh_host_*
 
 # NGINX Proxy
 COPY nginx/nginx.conf /etc/nginx/nginx.conf
 COPY nginx/502.html /usr/share/nginx/html/502.html
-
-# Application Manager config
-COPY app-manager/config.json /app-manager/public/config.json
 
 # Set template version
 ARG RELEASE
@@ -155,8 +166,9 @@ ENV VENV_PATH=${VENV_PATH}
 
 # Copy the scripts
 WORKDIR /
-COPY --chmod=755 scripts/* ./
-RUN mv /manage_venv.sh /usr/local/bin/manage_venv
+COPY --chmod=755 scripts/* /
+COPY --chmod=755 scripts/* /scripts/
+# RUN mv /scripts/manage_venv.sh /usr/local/bin/manage_venv
 
 # Start the container
 ARG REQUIRED_CUDA_VERSION

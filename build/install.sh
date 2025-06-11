@@ -25,14 +25,15 @@ python3 -c "from launch import prepare_environment; prepare_environment()" --ski
 
 # Clone the Automatic1111 Extensions
 git clone https://github.com/Mikubill/sd-webui-controlnet.git extensions/sd-webui-controlnet
-# git clone --depth=1 https://github.com/deforum-art/sd-webui-deforum.git extensions/deforum
 git clone --depth=1 https://github.com/ashleykleynhans/a1111-sd-webui-locon.git extensions/a1111-sd-webui-locon
-# git clone --depth=1 https://codeberg.org/Gourieff/sd-webui-reactor.git extensions/sd-webui-reactor
 git clone --depth=1 https://github.com/zanllp/sd-webui-infinite-image-browsing.git extensions/infinite-image-browsing
-# git clone --depth=1 https://github.com/Uminosachi/sd-webui-inpaint-anything.git extensions/inpaint-anything
 git clone --depth=1 https://github.com/Bing-su/adetailer.git extensions/adetailer
 git clone --depth=1 https://github.com/civitai/sd_civitai_extension.git extensions/sd_civitai_extension
 git clone https://github.com/BlafKing/sd-civitai-browser-plus.git extensions/sd-civitai-browser-plus
+
+# git clone --depth=1 https://codeberg.org/Gourieff/sd-webui-reactor.git extensions/sd-webui-reactor
+# git clone --depth=1 https://github.com/Uminosachi/sd-webui-inpaint-anything.git extensions/inpaint-anything
+# git clone --depth=1 https://github.com/deforum-art/sd-webui-deforum.git extensions/deforum
 # git clone --depth=1 https://github.com/mcmonkeyprojects/sd-dynamic-thresholding extensions/sd-dynamic-thresholding
 
 # Install dependencies for various extensions

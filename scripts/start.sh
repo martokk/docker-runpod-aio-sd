@@ -10,8 +10,7 @@ check_cuda_version() {
     CURRENT_CUDA_VERSION=$(nvidia-smi | grep -oP "CUDA Version: \K[0-9.]+")
 
     # Check if the CUDA version was successfully extracted
-    if [[ -z "${CURRENT_CUDA_VERSION}" ]];
-    then
+    if [[ -z "${CURRENT_CUDA_VERSION}" ]]; then
         echo "CUDA version not found. Make sure that CUDA is properly installed and 'nvidia-smi' is available."
         exit 1
     fi
@@ -19,18 +18,17 @@ check_cuda_version() {
     echo "Detected CUDA version using nvidia-smi: ${CURRENT_CUDA_VERSION}"
 
     # Split the version into major and minor for comparison
-    IFS='.' read -r -a CURRENT_CUDA_VERSION_ARRAY <<< "${CURRENT_CUDA_VERSION}"
+    IFS='.' read -r -a CURRENT_CUDA_VERSION_ARRAY <<<"${CURRENT_CUDA_VERSION}"
     CURRENT_CUDA_VERSION_MAJOR="${CURRENT_CUDA_VERSION_ARRAY[0]}"
     CURRENT_CUDA_VERSION_MINOR="${CURRENT_CUDA_VERSION_ARRAY[1]}"
 
-    IFS='.' read -r -a REQUIRED_CUDA_VERSION_ARRAY <<< "${REQUIRED_CUDA_VERSION}"
+    IFS='.' read -r -a REQUIRED_CUDA_VERSION_ARRAY <<<"${REQUIRED_CUDA_VERSION}"
     REQUIRED_CUDA_VERSION_MAJOR="${REQUIRED_CUDA_VERSION_ARRAY[0]}"
     REQUIRED_CUDA_VERSION_MINOR="${REQUIRED_CUDA_VERSION_ARRAY[1]}"
 
     # Compare the CUDA version with the required version
     if [[ "${CURRENT_CUDA_VERSION_MAJOR}" -lt "${REQUIRED_CUDA_VERSION_MAJOR}" ||
-          ( "${CURRENT_CUDA_VERSION_MAJOR}" -eq "${REQUIRED_CUDA_VERSION_MAJOR}" && "${CURRENT_CUDA_VERSION_MINOR}" -lt "${REQUIRED_CUDA_VERSION_MINOR}" ) ]];
-    then
+        ("${CURRENT_CUDA_VERSION_MAJOR}" -eq "${REQUIRED_CUDA_VERSION_MAJOR}" && "${CURRENT_CUDA_VERSION_MINOR}" -lt "${REQUIRED_CUDA_VERSION_MINOR}") ]]; then
         echo "Current CUDA version (${CURRENT_CUDA_VERSION}) is older than required (${REQUIRED_CUDA_VERSION})."
         echo "Please switch to a pod with CUDA version ${REQUIRED_CUDA_VERSION} or higher by selecting the appropriate filter on Pod deploy."
         exit 1
@@ -124,7 +122,7 @@ setup_ssh() {
     # Add SSH public key from environment variable to ~/.ssh/authorized_keys
     # if the PUBLIC_KEY environment variable is set
     if [[ ${PUBLIC_KEY} ]]; then
-        echo -e "${PUBLIC_KEY}\n" >> ~/.ssh/authorized_keys
+        echo -e "${PUBLIC_KEY}\n" >>~/.ssh/authorized_keys
     fi
 
     chmod 700 -R ~/.ssh
@@ -140,8 +138,8 @@ setup_ssh() {
 
 export_env_vars() {
     echo "ENV: Exporting environment variables..."
-    printenv | grep -E '^RUNPOD_|^PATH=|^_=' | awk -F = '{ print "export " $1 "=\"" $2 "\"" }' >> /etc/rp_environment
-    echo 'source /etc/rp_environment' >> ~/.bashrc
+    printenv | grep -E '^RUNPOD_|^PATH=|^_=' | awk -F = '{ print "export " $1 "=\"" $2 "\"" }' >>/etc/rp_environment
+    echo 'source /etc/rp_environment' >>~/.bashrc
 }
 
 start_jupyter() {
@@ -155,17 +153,17 @@ start_jupyter() {
 
     echo "JUPYTER: Starting Jupyter Lab..."
     mkdir -p /workspace/logs
-    cd / && \
-    nohup jupyter lab --allow-root \
-      --no-browser \
-      --port=8888 \
-      --ip=* \
-      --FileContentsManager.delete_to_trash=False \
-      --ContentsManager.allow_hidden=True \
-      --ServerApp.terminado_settings='{"shell_command":["/bin/bash"]}' \
-      --ServerApp.token=${JUPYTER_PASSWORD} \
-      --ServerApp.allow_origin=* \
-      --ServerApp.preferred_dir=/workspace &> /workspace/logs/jupyter.log &
+    cd / &&
+        nohup jupyter lab --allow-root \
+            --no-browser \
+            --port=2010 \
+            --ip=* \
+            --FileContentsManager.delete_to_trash=False \
+            --ContentsManager.allow_hidden=True \
+            --ServerApp.terminado_settings='{"shell_command":["/bin/bash"]}' \
+            --ServerApp.token=${JUPYTER_PASSWORD} \
+            --ServerApp.allow_origin=* \
+            --ServerApp.preferred_dir=/workspace &>/workspace/logs/jupyter.log &
     echo "JUPYTER: Jupyter Lab started"
 }
 
@@ -174,19 +172,19 @@ start_code_server() {
     echo "CODE-SERVER: Starting Code Server..."
     mkdir -p /workspace/logs
     nohup code-server \
-        --bind-addr 0.0.0.0:7777 \
+        --bind-addr 0.0.0.0:2000 \
         --auth none \
         --enable-proposed-api true \
         --disable-telemetry \
-        /workspace &> /workspace/logs/code-server.log &
+        /workspace &>/workspace/logs/code-server.log &
     echo "CODE-SERVER: Code Server started"
 }
 
-start_runpod_uploader() {
-    echo "RUNPOD-UPLOADER: Starting RunPod Uploader..."
-    nohup /usr/local/bin/runpod-uploader &> /workspace/logs/runpod-uploader.log &
-    echo "RUNPOD-UPLOADER: RunPod Uploader started"
-}
+# start_runpod_uploader() {
+#     echo "RUNPOD-UPLOADER: Starting RunPod Uploader..."
+#     nohup /usr/local/bin/runpod-uploader &>/workspace/logs/runpod-uploader.log &
+#     echo "RUNPOD-UPLOADER: RunPod Uploader started"
+# }
 
 configure_filezilla() {
     # Only proceed if there is a public IP
@@ -205,21 +203,21 @@ configure_filezilla() {
         ssh_config="/etc/ssh/sshd_config"
 
         # Enable PasswordAuthentication
-        grep -q "^PasswordAuthentication" ${ssh_config} && \
-          sed -i "s/^PasswordAuthentication.*/PasswordAuthentication yes/" ${ssh_config} || \
-          echo "PasswordAuthentication yes" >> ${ssh_config}
+        grep -q "^PasswordAuthentication" ${ssh_config} &&
+            sed -i "s/^PasswordAuthentication.*/PasswordAuthentication yes/" ${ssh_config} ||
+            echo "PasswordAuthentication yes" >>${ssh_config}
 
         # Enable PermitRootLogin
-        grep -q "^PermitRootLogin" ${ssh_config} && \
-          sed -i "s/^PermitRootLogin.*/PermitRootLogin yes/" ${ssh_config} || \
-          echo "PermitRootLogin yes" >> ${ssh_config}
+        grep -q "^PermitRootLogin" ${ssh_config} &&
+            sed -i "s/^PermitRootLogin.*/PermitRootLogin yes/" ${ssh_config} ||
+            echo "PermitRootLogin yes" >>${ssh_config}
 
         # Restart the SSH service
         service ssh restart
 
         # Create FileZilla XML configuration for SFTP
         filezilla_config_file="/workspace/filezilla_sftp_config.xml"
-        cat > ${filezilla_config_file} << EOF
+        cat >${filezilla_config_file} <<EOF
 <?xml version="1.0" encoding="UTF-8"?>
 <FileZilla3 version="3.66.1" platform="linux">
     <Servers>
@@ -275,12 +273,24 @@ start_jupyter
 start_code_server
 #check_cuda_version
 #test_pytorch_cuda
-start_runpod_uploader
-execute_script "/pre_start.sh" "PRE-START: Running pre-start script..."
+#start_runpod_uploader
+export_env_vars
+
+if [ -f "/workspace/scripts/pre_start.sh" ]; then
+    execute_script "/workspace/scripts/pre_start.sh" "PRE-START: Running pre-start script..."
+else
+    execute_script "/scripts/pre_start.sh" "PRE-START: Running pre-start script..."
+fi
+
 configure_filezilla
 update_rclone
 check_python_version
-export_env_vars
-execute_script "/post_start.sh" "POST-START: Running post-start script..."
+
+if [ -f "/workspace/scripts/post_start.sh" ]; then
+    execute_script "/workspace/scripts/post_start.sh" "POST-START: Running post-start script..."
+else
+    execute_script "/scripts/post_start.sh" "POST-START: Running post-start script..."
+fi
+
 echo "Container is READY!"
 sleep infinity

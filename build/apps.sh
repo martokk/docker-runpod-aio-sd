@@ -23,8 +23,8 @@ code-server --install-extension ms-toolsai.vscode-jupyter-powertoys
 python3 -m ipykernel install --name "python3" --display-name "Python 3"
 
 # Install RunPod File Uploader
-curl -sSL https://github.com/kodxana/RunPod-FilleUploader/raw/main/scripts/installer.sh -o installer.sh && \
-    chmod +x installer.sh && \
+curl -sSL https://github.com/kodxana/RunPod-FilleUploader/raw/main/scripts/installer.sh -o installer.sh &&
+    chmod +x installer.sh &&
     ./installer.sh
 
 # Install rclone
@@ -34,13 +34,29 @@ curl https://rclone.org/install.sh | bash
 rclone selfupdate
 
 # Install runpodctl
-wget "https://github.com/runpod/runpodctl/releases/download/${RUNPODCTL_VERSION}/runpodctl-linux-amd64" -O runpodctl && \
-    chmod a+x runpodctl && \
+wget "https://github.com/runpod/runpodctl/releases/download/${RUNPODCTL_VERSION}/runpodctl-linux-amd64" -O runpodctl &&
+    chmod a+x runpodctl &&
     mv runpodctl /usr/local/bin
 
 # Install croc
 curl https://getcroc.schollz.com | bash
 
 # Install speedtest CLI
-curl -s https://packagecloud.io/install/repositories/ookla/speedtest-cli/script.deb.sh | bash && \
+curl -s https://packagecloud.io/install/repositories/ookla/speedtest-cli/script.deb.sh | bash &&
     apt install -y speedtest
+
+# Install App Manager
+cd /
+git clone https://github.com/ashleykleynhans/app-manager.git /app-manager
+cd /app-manager
+git checkout tags/${APP_MANAGER_VERSION}
+npm install
+
+# Install Server Status API
+cd /
+git clone https://github.com/martokk/server_status_api.git /server_status_api
+cd /server_status_api
+pip install poetry
+poetry config virtualenvs.in-project false
+poetry config virtualenvs.path /workspace/venvs
+poetry install --no-interaction --no-ansi
