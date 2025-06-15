@@ -28,4 +28,12 @@ services:
       START_JUPYTER: "1"
       START_TENSORBOARD: "1"
       START_RISA_PLAYGROUND: "1"
+      RISA_ENV_NAME: "playground"
+      RISA_ACCESS_SECRET_KEY: "jwt-access-secret-key"
+      RISA_REFRESH_SECRET_KEY: "jwt-refresh-secret-key"
+      RISA_FIRST_SUPERUSER_EMAIL: "admin@example.com"
+      RISA_FIRST_SUPERUSER_PASSWORD: "admin"
+      RISA_FIRST_SUPERUSER_USERNAME: "admin"
+      RISA_PROJECT_NAME: "Risa Playground"
+      RISA_EXPORT_API_KEY: "secret-key-export-api"
     restart: unless-stopped

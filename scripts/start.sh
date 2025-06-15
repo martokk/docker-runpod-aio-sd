@@ -277,9 +277,9 @@ start_code_server
 export_env_vars
 
 if [ -f "/workspace/scripts/pre_start.sh" ]; then
-    execute_script "/workspace/scripts/pre_start.sh" "PRE-START: Running pre-start script..."
+    execute_script "/workspace/scripts/pre_start.sh" "PRE-START: Running pre-start script [from /workspace/scripts]..."
 else
-    execute_script "/scripts/pre_start.sh" "PRE-START: Running pre-start script..."
+    execute_script "/scripts/pre_start.sh" "PRE-START: Running pre-start script [from /scripts] [NOT WORKSPACE]..."
 fi
 
 configure_filezilla
@@ -287,9 +287,9 @@ update_rclone
 check_python_version
 
 if [ -f "/workspace/scripts/post_start.sh" ]; then
-    execute_script "/workspace/scripts/post_start.sh" "POST-START: Running post-start script..."
+    execute_script "/workspace/scripts/post_start.sh" "POST-START: Running post-start script [from /workspace/scripts]..."
 else
-    execute_script "/scripts/post_start.sh" "POST-START: Running post-start script..."
+    execute_script "/scripts/post_start.sh" "POST-START: Running post-start script [from /scripts] [NOT WORKSPACE]..."
 fi
 
 echo "Container is READY!"

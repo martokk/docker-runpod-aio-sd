@@ -169,6 +169,17 @@ mv /accelerate.yaml /root/.cache/huggingface/accelerate/default_config.yaml
 
 echo "PRE-START: LAUNCHING APPLICATIONS ----------------------------------------------"
 
+echo "ENV START VARIABLES"
+echo "==================="
+echo "START_RISA_PLAYGROUND=${START_RISA_PLAYGROUND}"
+echo "START_WEBDAV=${START_WEBDAV}"
+echo "START_JUPYTER=${START_JUPYTER}"
+echo "START_TENSORBOARD=${START_TENSORBOARD}"
+echo "START_A1111=${START_A1111}"
+echo "START_KOHYA=${START_KOHYA}"
+echo "START_COMFYUI=${START_COMFYUI}"
+echo "START_INVOKEAI=${START_INVOKEAI}"
+
 if [ ${START_RISA_PLAYGROUND} ]; then
     echo "\n    ---- LAUNCHING: Risa Playground ------------------------------------------"
     /workspace/scripts/start_risa_playground.sh
