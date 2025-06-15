@@ -23,9 +23,9 @@ code-server --install-extension ms-toolsai.vscode-jupyter-powertoys
 python3 -m ipykernel install --name "python3" --display-name "Python 3"
 
 # Install RunPod File Uploader
-curl -sSL https://github.com/kodxana/RunPod-FilleUploader/raw/main/scripts/installer.sh -o installer.sh &&
-    chmod +x installer.sh &&
-    ./installer.sh
+# curl -sSL https://github.com/kodxana/RunPod-FilleUploader/raw/main/scripts/installer.sh -o installer.sh &&
+#     chmod +x installer.sh &&
+#     ./installer.sh
 
 # Install rclone
 curl https://rclone.org/install.sh | bash
@@ -52,10 +52,10 @@ cd /app-manager
 git checkout tags/${APP_MANAGER_VERSION}
 npm install
 
-# Install Server Status API
+# Install Risa Playground
 cd /
-git clone https://github.com/martokk/server_status_api.git /server_status_api
-cd /server_status_api
+git clone https://github.com/martokk/risa.git /risa
+cd /risa
 pip install poetry
 poetry config virtualenvs.in-project false
 poetry config virtualenvs.path /workspace/venvs

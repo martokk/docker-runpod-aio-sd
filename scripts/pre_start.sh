@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-echo "PRE-START: Running pre-start script..."
+echo "PRE-START: START ---------------------------------------------------------------"
 
 export PYTHONUNBUFFERED=1
 export APP="stable-diffusion-webui"
@@ -142,13 +142,7 @@ fix_venvs() {
 
 if [ "$(printf '%s\n' "$EXISTING_VERSION" "$TEMPLATE_VERSION" | sort -V | head -n 1)" = "$EXISTING_VERSION" ]; then
     if [ "$EXISTING_VERSION" != "$TEMPLATE_VERSION" ]; then
-        sync_apps
         fix_venvs
-
-        # Configure accelerate
-        echo "Configuring accelerate..."
-        mkdir -p /root/.cache/huggingface/accelerate
-        mv /accelerate.yaml /root/.cache/huggingface/accelerate/default_config.yaml
 
         # Create logs directory
         mkdir -p /workspace/logs
@@ -162,75 +156,69 @@ fi
 # Add VENV_PATH to webui-user.sh
 sed -i "s|venv_dir=VENV_PATH|venv_dir=\"${VENV_PATH}\"|" /workspace/stable-diffusion-webui/webui-user.sh
 
-# Start application manager
-echo "PRE-START: Starting application manager"
-cd /app-manager
-npm start >/workspace/logs/app-manager.log 2>&1 &
+echo "PRE-START: SYNCING APPLICATIONS ------------------------------------------------"
+sync_apps
 
-# if [[ ${DISABLE_AUTOLAUNCH} ]]; then
-#     echo "Auto launching is disabled so the applications will not be started automatically"
-#     echo "You can launch them manually using the launcher scripts:"
-#     echo ""
-#     echo "   Stable Diffusion Web UI:"
-#     echo "   ---------------------------------------------"
-#     echo "   /start_a1111.sh"
-#     echo ""
-#     echo "   Kohya_ss"
-#     echo "   ---------------------------------------------"
-#     echo "   /start_kohya.sh"
-#     echo ""
-#     echo "   ComfyUI"
-#     echo "   ---------------------------------------------"
-#     echo "   /start_comfyui.sh"
-#     echo ""
-#     echo "   InvokeAI"
-#     echo "   ---------------------------------------------"
-#     echo "   /start_invokeai.sh"
-# else
-#     /start_a1111.sh
-#     /start_kohya.sh
-#     /start_comfyui.sh
-#     /start_invokeai.sh
-# fi
+echo "PRE-START: CONFIGURING ACCELERATE ----------------------------------------------"
+mkdir -p /root/.cache/huggingface/accelerate
+mv /accelerate.yaml /root/.cache/huggingface/accelerate/default_config.yaml
 
-if [ ${START_SERVER_STATUS_API} ]; then
-    echo "PRE-START: Launching server status API"
-    /workspace/scripts/start_server_status_api.sh
+# echo "PRE-START: STARTING APPLICATION MANAGER ----------------------------------------"
+# cd /app-manager
+# npm start >/workspace/logs/app-manager.log 2>&1 &
+
+echo "PRE-START: LAUNCHING APPLICATIONS ----------------------------------------------"
+
+echo "ENV START VARIABLES"
+echo "==================="
+echo "START_RISA_PLAYGROUND=${START_RISA_PLAYGROUND}"
+echo "START_WEBDAV=${START_WEBDAV}"
+echo "START_JUPYTER=${START_JUPYTER}"
+echo "START_TENSORBOARD=${START_TENSORBOARD}"
+echo "START_A1111=${START_A1111}"
+echo "START_KOHYA=${START_KOHYA}"
+echo "START_COMFYUI=${START_COMFYUI}"
+echo "START_INVOKEAI=${START_INVOKEAI}"
+
+if [ ${START_RISA_PLAYGROUND} ]; then
+    echo "\n    ---- LAUNCHING: Risa Playground ------------------------------------------"
+    /workspace/scripts/start_risa_playground.sh
 fi
 
 if [ ${START_WEBDAV} ]; then
-    echo "PRE-START: Launching WebDAV"
+    echo "\n    ---- LAUNCHING: WebDAV -----------------------------------------------------"
     /workspace/scripts/start_webdav.sh
 fi
 
 if [ ${START_JUPYTER} ]; then
-    echo "PRE-START: Launching Jupyter"
+    echo "\n    ---- LAUNCHING: Jupyter ----------------------------------------------------"
     /workspace/scripts/start_jupyter.sh
 fi
 
 if [ ${START_TENSORBOARD} ]; then
-    echo "PRE-START: Launching TensorBoard"
+    echo "\n    ---- LAUNCHING: TensorBoard ------------------------------------------------"
     /workspace/scripts/start_tensorboard.sh
 fi
 
 if [ ${START_A1111} ]; then
-    echo "PRE-START: Launching A1111"
+    echo "\n    ---- LAUNCHING: A1111 ------------------------------------------------------"
     /workspace/scripts/start_a1111.sh
 fi
 
 if [ ${START_KOHYA} ]; then
-    echo "PRE-START: Launching Kohya"
+    echo "\n    ---- LAUNCHING: Kohya ------------------------------------------------------"
     /workspace/scripts/start_kohya.sh
 fi
 
 if [ ${START_COMFYUI} ]; then
-    echo "PRE-START: Launching ComfyUI"
+    echo "\n    ---- LAUNCHING: ComfyUI ----------------------------------------------------"
     /workspace/scripts/start_comfyui.sh
 fi
 
 if [ ${START_INVOKEAI} ]; then
-    echo "PRE-START: Launching InvokeAI"
+    echo "\n    ---- LAUNCHING: InvokeAI --------------------------------------------------"
     /workspace/scripts/start_invokeai.sh
 fi
 
-echo "PRE-START: Done"
+echo "PRE-START: DONE ------------------------------------------------------------"
+echo "----------------------------------------------------------------------------\n\n"

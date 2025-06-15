@@ -4,7 +4,7 @@ export PYTHONUNBUFFERED=1
 echo "SERVER_STATUS_API: Starting Server Status API"
 
 cd /server_status_api
-export HF_HOME="/workspace"
+export HF_HOME="/workspace/.cache/huggingface"
 
 echo "SERVER_STATUS_API: Pulling latest changes..."
 git pull

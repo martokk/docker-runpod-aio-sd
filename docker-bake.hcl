@@ -7,7 +7,7 @@ variable "REGISTRY_USER" {
 }
 
 variable "APP" {
-    default = "stable-diffusion-docker"
+    default = "docker-risa-playground"
 }
 
 variable "RELEASE" {
