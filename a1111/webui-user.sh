@@ -3,7 +3,7 @@
 # Uncomment and change the variables below to your need:#
 #########################################################
 
-export HF_HOME="/workspace"
+export HF_HOME="/workspace/.cache/huggingface"
 
 # Install directory without trailing slash
 install_dir="/workspace"
