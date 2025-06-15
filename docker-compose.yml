@@ -1,8 +1,8 @@
 version: "3.8"
 
 services:
-  stable-diffusion-docker:
-    image: martokk/stable-diffusion-docker:latest
+  docker-risa-playground:
+    image: martokk/docker-risa-playground:latest
     deploy:
       resources:
         reservations:
@@ -27,5 +27,5 @@ services:
       START_INVOKEAI: "1"
       START_JUPYTER: "1"
       START_TENSORBOARD: "1"
-      START_SERVER_STATUS_API: "1"
+      START_RISA_PLAYGROUND: "1"
     restart: unless-stopped
