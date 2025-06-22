@@ -24,9 +24,15 @@
 - source: /workspace/apps/stable-diffusion-webui/outputs
   destination: /workspace/__OUTPUTS__/a1111
 
+- source: /workspace/configs/a1111/notification.mp3
+  destination: /workspace/apps/stable-diffusion-webui/notification.mp3
+
 # KOHYA_SS -----------------------------------------------------------------------------------------------------
 - source: /workspace/configs/kohya_ss/.env
   destination: /workspace/apps/kohya_ss/.env
+
+- source: /workspace/configs/kohya_ss/gui.sh
+  destination: /workspace/apps/kohya_ss/gui.sh
 
 # KOHYA_SS PRESETS ---------------------------------------------------------------------------------------------
 - source: "/workspace/configs/kohya_ss/presets/lora/vDefault - Lora - 1024x1024.json"

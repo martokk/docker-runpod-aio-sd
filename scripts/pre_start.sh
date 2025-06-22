@@ -45,11 +45,17 @@ sync_directory() {
     # Ensure destination directory exists
     mkdir -p "${dst_dir}"
 
-    # Using 'cp -au' as a more memory-efficient alternative to rsync for this use case.
+    # Free up memory by clearing page cache, dentries, and inodes.
+    # This requires root privileges.
+    sync
+    if [ -w /proc/sys/vm/drop_caches ]; then
+        echo 3 >/proc/sys/vm/drop_caches
+    fi
+
+    # Using rsync as it can be more memory-efficient than cp for large numbers of files.
     # -a: archive mode (preserves attributes, copies recursively)
     # -u: update (copies only when the SOURCE file is newer than the destination file or when the destination file is missing)
-    # The /.. at the end of src_dir is a trick to copy hidden files and the contents of the directory.
-    cp -au "${src_dir}/." "${dst_dir}"
+    rsync -au "${src_dir}/" "${dst_dir}/"
 
     # Remove the source directory
     rm -rf "${src_dir}"
@@ -62,6 +68,12 @@ sync_apps() {
     # Start the timer
     start_time=$(date +%s)
 
+    echo "SYNC: Sync /configs"
+    sync_directory "/configs" "/workspace/configs"
+
+    echo "SYNC: Sync /scripts"
+    sync_directory "/scripts" "/workspace/configs/scripts"
+
     echo "SYNC: Sync /apps"
     sync_directory "/apps" "/workspace/apps"
 
@@ -71,12 +83,6 @@ sync_apps() {
             sync_directory "/venvs/${venv_name}" "/workspace/.cache/venvs/${venv_name}"
         fi
     done
-
-    echo "SYNC: Sync /configs"
-    sync_directory "/configs" "/workspace/configs"
-
-    echo "SYNC: Sync /scripts"
-    sync_directory "/scripts" "/workspace/configs/scripts"
 
     save_template_json
 
@@ -103,6 +109,10 @@ create_symlinks() {
     fi
 
     yq -r '[.[] | .source, .destination] | join("\u0000")' "${symlinks_config}" | while IFS= read -r -d '' source && IFS= read -r -d '' destination; do
+        # Remove trailing slashes
+        source="${source%/}"
+        destination="${destination%/}"
+
         if [[ -z "$source" || -z "$destination" ]]; then
             echo "SYMLINK: Skipping invalid entry."
             continue

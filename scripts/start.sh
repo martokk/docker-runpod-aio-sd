@@ -232,8 +232,8 @@ echo "Container Started, configuration in progress..."
 start_nginx
 setup_ssh
 start_cron
-start_jupyter
-start_code_server
+# start_jupyter
+# start_code_server
 #check_cuda_version
 #test_pytorch_cuda
 #start_runpod_uploader
