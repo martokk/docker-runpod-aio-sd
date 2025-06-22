@@ -79,7 +79,8 @@ sync_apps() {
 
     echo "SYNC: Sync /venvs"
     for venv_name in a1111 comfyui invokeai kohya_ss risa; do
-        if [ -d "/venvs/${venv_name}" ]; then
+        # Only sync if the destination venv does not exist and the source venv exists.
+        if [[ ! -d "/workspace/.cache/venvs/${venv_name}" && -d "/venvs/${venv_name}" ]]; then
             sync_directory "/venvs/${venv_name}" "/workspace/.cache/venvs/${venv_name}"
         fi
     done

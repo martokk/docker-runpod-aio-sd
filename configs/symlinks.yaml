@@ -27,6 +27,9 @@
 - source: /workspace/configs/a1111/notification.mp3
   destination: /workspace/apps/stable-diffusion-webui/notification.mp3
 
+- source: /workspace/__OUTPUTS__/kohya_ss
+  destination: /workspace/apps/stable-diffusion-webui/models/Lora/__TRAINING__
+
 # KOHYA_SS -----------------------------------------------------------------------------------------------------
 - source: /workspace/configs/kohya_ss/.env
   destination: /workspace/apps/kohya_ss/.env
