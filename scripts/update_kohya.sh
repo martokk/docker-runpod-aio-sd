@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-cd /workspace/kohya_ss
+cd /workspace/apps/kohya_ss
 source venv/bin/activate
 git checkout master
 git pull

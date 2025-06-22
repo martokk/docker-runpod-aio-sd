@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 
 if [ "$#" -ne 2 ]; then
-  echo "Usage: $0 <OLD_VENV> <NEW_VENV>"
-  echo "   eg: $0 /venv /workspace/venv"
-  exit 1
+    echo "Usage: $0 <OLD_VENV> <NEW_VENV>"
+    echo "   eg: $0 /venv /workspace/venv"
+    exit 1
 fi
 
 OLD_PATH=${1}
@@ -17,14 +17,11 @@ PYTHON_VERSION=$(python3 -c "import sys; print(f'{sys.version_info.major}.{sys.v
 
 echo "Python version is ${PYTHON_VERSION}.x"
 
-# Update the venv path in the activate script
-if [[ "$PYTHON_VERSION" == "3.10" ]]; then
-    sed -i "s|VIRTUAL_ENV=\"${OLD_PATH}\"|VIRTUAL_ENV=\"${NEW_PATH}\"|" activate
-elif [[ "$PYTHON_VERSION" == "3.11" || "$PYTHON_VERSION" == "3.12" ]]; then
-    sed -i "s|VIRTUAL_ENV=${OLD_PATH}|VIRTUAL_ENV=${NEW_PATH}|" activate
-else
-    sed -i "s|VIRTUAL_ENV=\"${OLD_PATH}\"|VIRTUAL_ENV=\"${NEW_PATH}\"|" activate
-fi
+# Update the venv path in the activate script - handle both quoted and unquoted formats
+# First, try to replace quoted format
+sed -i "s|VIRTUAL_ENV=\"${OLD_PATH}\"|VIRTUAL_ENV=\"${NEW_PATH}\"|" activate
+# Then, try to replace unquoted format (in case the first didn't match)
+sed -i "s|VIRTUAL_ENV=${OLD_PATH}|VIRTUAL_ENV=${NEW_PATH}|" activate
 
 # Update the venv path in the shebang for all files containing a shebang
 sed -i "s|#\!${OLD_PATH}/bin/python3|#\!${NEW_PATH}/bin/python3|" *

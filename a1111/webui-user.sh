@@ -6,13 +6,13 @@
 export HF_HOME="/workspace/.cache/huggingface"
 
 # Install directory without trailing slash
-install_dir="/workspace"
+install_dir="/workspace/apps"
 
 # Name of the subdirectory
 #clone_dir="stable-diffusion-webui"
 
 # Commandline arguments for webui.py, for example: export COMMANDLINE_ARGS="--medvram --opt-split-attention"
-export COMMANDLINE_ARGS="--port 3001 --listen --api --xformers --skip-install --enable-insecure-extension-access --no-half-vae --no-download-sd-model"
+export COMMANDLINE_ARGS="--port 3001 --listen --api --xformers --skip-install --enable-insecure-extension-access --no-half-vae --no-download-sd-model --skip-torch-cuda-test"
 
 # python3 executable
 #python_cmd="python3"
@@ -21,7 +21,7 @@ export COMMANDLINE_ARGS="--port 3001 --listen --api --xformers --skip-install --
 #export GIT="git"
 
 # python3 venv without trailing slash (defaults to ${install_dir}/${clone_dir}/venv)
-venv_dir=VENV_PATH
+venv_dir="/workspace/.cache/venvs/a1111"
 
 # script to launch to start the app
 #export LAUNCH_SCRIPT="launch.py"

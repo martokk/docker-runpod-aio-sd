@@ -5,7 +5,8 @@ pip3 install -U --no-cache-dir jupyterlab \
     ipykernel \
     ipywidgets \
     gdown \
-    OhMyRunPod
+    OhMyRunPod \
+    yq
 
 # Install code-server
 curl -fsSL https://code-server.dev/install.sh | sh
@@ -21,11 +22,6 @@ code-server --install-extension ms-toolsai.vscode-jupyter-powertoys
 
 # Pre-install Jupyter kernel
 python3 -m ipykernel install --name "python3" --display-name "Python 3"
-
-# Install RunPod File Uploader
-# curl -sSL https://github.com/kodxana/RunPod-FilleUploader/raw/main/scripts/installer.sh -o installer.sh &&
-#     chmod +x installer.sh &&
-#     ./installer.sh
 
 # Install rclone
 curl https://rclone.org/install.sh | bash
@@ -45,18 +41,12 @@ curl https://getcroc.schollz.com | bash
 curl -s https://packagecloud.io/install/repositories/ookla/speedtest-cli/script.deb.sh | bash &&
     apt install -y speedtest
 
-# Install App Manager
-cd /
-git clone https://github.com/ashleykleynhans/app-manager.git /app-manager
-cd /app-manager
-git checkout tags/${APP_MANAGER_VERSION}
-npm install
-
 # Install Risa Playground
 cd /
-git clone https://github.com/martokk/risa.git /risa
-cd /risa
+git clone https://github.com/martokk/risa.git /apps/risa
+cd /apps/risa
 pip install poetry
-poetry config virtualenvs.in-project false
-poetry config virtualenvs.path /workspace/venvs
+
+python -m venv /venvs/risa
+poetry env use /venvs/risa/bin/python
 poetry install --no-interaction --no-ansi
