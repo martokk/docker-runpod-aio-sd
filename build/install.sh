@@ -12,7 +12,7 @@ cd /apps/stable-diffusion-webui
 git checkout tags/${WEBUI_VERSION}
 
 # Create and activate venv
-python3 -m venv --system-site-packages /venvs/a1111
+python3 -m venv /venvs/a1111
 source /venvs/a1111/bin/activate
 
 # Upgrade pip

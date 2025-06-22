@@ -11,8 +11,9 @@ git pull
 git checkout dev
 
 echo "RISA PLAYGROUND: Installing dependencies..."
+source /workspace/.cache/venvs/risa/bin/activate
 poetry env use /workspace/.cache/venvs/risa/bin/python
-poetry install
+poetry install --no-interaction --no-ansi
 
 echo "RISA PLAYGROUND: Starting Risa Playground..."
 nohup poetry run python3 -m app >/workspace/.logs/risa_playground.log 2>&1 &

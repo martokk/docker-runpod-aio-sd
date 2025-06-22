@@ -10,7 +10,7 @@ cd /apps/comfyui
 git checkout ${COMFYUI_VERSION}
 
 # Create and activate the venv
-python3 -m venv --system-site-packages /venvs/comfyui
+python3 -m venv /venvs/comfyui
 source /venvs/comfyui/bin/activate
 
 # Install torch and xformers

@@ -21,7 +21,7 @@
 - source: /workspace/configs/a1111/webui-user.sh
   destination: /workspace/apps/stable-diffusion-webui/webui-user.sh
 
-- source: /workspace/apps/stable-diffusion-webui/outputs
+- source: /workspace/apps/stable-diffusion-webui/output
   destination: /workspace/__OUTPUTS__/a1111
 
 - source: /workspace/configs/a1111/notification.mp3

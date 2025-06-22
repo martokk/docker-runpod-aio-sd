@@ -12,7 +12,7 @@ git checkout ${KOHYA_VERSION}
 git submodule update --init --recursive
 
 # Create and source the venv
-python3 -m venv --system-site-packages /venvs/kohya_ss
+python3 -m venv /venvs/kohya_ss
 source /venvs/kohya_ss/bin/activate
 
 # Install torch and xformers
