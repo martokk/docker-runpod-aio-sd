@@ -23,6 +23,7 @@ apt install -y --no-install-recommends \
     libgl1 \
     libxrender1 \
     libxext6 \
+    lsof \
     ffmpeg \
     wget \
     curl \

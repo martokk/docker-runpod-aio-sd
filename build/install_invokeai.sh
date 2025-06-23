@@ -5,7 +5,7 @@ set -e
 mkdir /InvokeAI
 cd /InvokeAI
 mkdir -p /venvs
-python3 -m venv --system-site-packages /venvs/invokeai
+python3 -m venv /venvs/invokeai
 source /venvs/invokeai/bin/activate
 
 # Install torch and xformers

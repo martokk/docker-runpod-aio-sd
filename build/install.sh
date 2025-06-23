@@ -1,15 +1,19 @@
 #!/usr/bin/env bash
 set -e
 
+mkdir -p /apps
+mkdir -p /venvs
+
 # Clone the git repo of the Stable Diffusion Web UI by Automatic1111
 # and set version
+cd /apps
 git clone https://github.com/AUTOMATIC1111/stable-diffusion-webui.git
-cd /stable-diffusion-webui
+cd /apps/stable-diffusion-webui
 git checkout tags/${WEBUI_VERSION}
 
 # Create and activate venv
-python3 -m venv --system-site-packages /venv
-source /venv/bin/activate
+python3 -m venv /venvs/a1111
+source /venvs/a1111/bin/activate
 
 # Upgrade pip
 pip install --upgrade pip
@@ -42,11 +46,11 @@ git clone https://github.com/BlafKing/sd-civitai-browser-plus.git extensions/sd-
 # cd /stable-diffusion-webui/extensions/sd-webui-reactor
 # pip3 install -r requirements.txt
 # pip3 install onnxruntime-gpu
-cd /stable-diffusion-webui/extensions/infinite-image-browsing
+cd /apps/stable-diffusion-webui/extensions/infinite-image-browsing
 pip3 install -r requirements.txt
-cd /stable-diffusion-webui/extensions/adetailer
+cd /apps/stable-diffusion-webui/extensions/adetailer
 python3 -m install
-cd /stable-diffusion-webui/extensions/sd_civitai_extension
+cd /apps/stable-diffusion-webui/extensions/sd_civitai_extension
 pip3 install -r requirements.txt
 
 # Install dynamic thresholding extension
@@ -64,11 +68,11 @@ pip3 install -r requirements.txt
 # python3 -m install
 
 # Install dependencies for Civitai Browser+ extension
-cd /stable-diffusion-webui/extensions/sd-civitai-browser-plus
+cd /apps/stable-diffusion-webui/extensions/sd-civitai-browser-plus
 pip3 install send2trash beautifulsoup4 ZipUnicode fake-useragent packaging pysocks
 
 # Install dependencies for ControlNet extension last so other extensions don't interfere with it
-cd /stable-diffusion-webui/extensions/sd-webui-controlnet
+cd /apps/stable-diffusion-webui/extensions/sd-webui-controlnet
 pip3 install -r requirements.txt
 pip3 install protobuf==3.20.0
 pip3 cache purge

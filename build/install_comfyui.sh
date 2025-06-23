@@ -1,14 +1,17 @@
 #!/usr/bin/env bash
 set -e
 
+mkdir -p /apps
+mkdir -p /venvs
+
 # Clone the repo
-git clone https://github.com/comfyanonymous/ComfyUI.git /ComfyUI
-cd /ComfyUI
+git clone https://github.com/comfyanonymous/ComfyUI.git /apps/comfyui
+cd /apps/comfyui
 git checkout ${COMFYUI_VERSION}
 
 # Create and activate the venv
-python3 -m venv --system-site-packages venv
-source venv/bin/activate
+python3 -m venv /venvs/comfyui
+source /venvs/comfyui/bin/activate
 
 # Install torch and xformers
 pip3 install --no-cache-dir torch==${COMFYUI_TORCH_VERSION} torchvision torchaudio --index-url ${INDEX_URL}

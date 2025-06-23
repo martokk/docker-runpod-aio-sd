@@ -61,10 +61,10 @@ to launch it on RunPod.
 ## Downloading models
 
 ```bash
-cd /workspace/stable-diffusion-webui/models/Stable-diffusion
+cd /workspace/apps/stable-diffusion-webui/models/Stable-diffusion
 wget https://huggingface.co/stabilityai/stable-diffusion-xl-base-1.0/resolve/main/sd_xl_base_1.0.safetensors
 wget https://huggingface.co/stabilityai/stable-diffusion-xl-refiner-1.0/resolve/main/sd_xl_refiner_1.0.safetensors
-cd /workspace/stable-diffusion-webui/models/VAE
+cd /workspace/apps/stable-diffusion-webui/models/VAE
 wget https://huggingface.co/madebyollin/sdxl-vae-fp16-fix/resolve/main/sdxl_vae.safetensors
 ```
 
@@ -126,7 +126,7 @@ docker run -d \
   -p 8000:8000 \
   -p 8888:8888 \
   -p 9090:9090 \
-  -e VENV_PATH=/workspace/venvs/a1111 \
+  -e VENV_PATH=/workspace/.cache/venvs/a1111 \
   -e JUPYTER_PASSWORD=Jup1t3R! \
   -e ENABLE_TENSORBOARD=1 \
   ashleykza/stable-diffusion-webui:latest
@@ -167,7 +167,7 @@ You can obviously substitute the image name and tag with your own.
 
 | Variable             | Description                                      | Default                |
 |----------------------|--------------------------------------------------|------------------------|
-| VENV_PATH            | Set the path for the Python venv for the app     | /workspace/venvs/a1111 |
+| VENV_PATH            | Set the path for the Python venv for the app     | /workspace/.cache/venvs/a1111 |
 | JUPYTER_LAB_PASSWORD | Set a password for Jupyter lab                   | not set - no password  |
 | DISABLE_AUTOLAUNCH   | Disable Web UIs from launching automatically     | (not set)              |
 | DISABLE_SYNC         | Disable syncing if using a RunPod network volume | (not set)              |
