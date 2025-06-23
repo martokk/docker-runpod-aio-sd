@@ -1,32 +1,5 @@
 #!/usr/bin/env bash
 
-echo "PRE-START: START ---------------------------------------------------------------"
-
-export PYTHONUNBUFFERED=1
-
-TEMPLATE_NAME="stable-diffusion-webui"
-TEMPLATE_VERSION_FILE="/workspace/apps/stable-diffusion-webui/template.json"
-
-echo "TEMPLATE NAME: ${TEMPLATE_NAME}"
-echo "TEMPLATE VERSION: ${TEMPLATE_VERSION}"
-echo "VENV PATH: ${VENV_PATH}"
-
-if [[ -e ${TEMPLATE_VERSION_FILE} ]]; then
-    EXISTING_TEMPLATE_NAME=$(jq -r '.template_name // empty' "$TEMPLATE_VERSION_FILE")
-
-    if [[ -n "${EXISTING_TEMPLATE_NAME}" ]]; then
-        if [[ "${EXISTING_TEMPLATE_NAME}" != "${TEMPLATE_NAME}" ]]; then
-            EXISTING_VERSION="0.0.0"
-        else
-            EXISTING_VERSION=$(jq -r '.template_version // empty' "$TEMPLATE_VERSION_FILE")
-        fi
-    else
-        EXISTING_VERSION="0.0.0"
-    fi
-else
-    EXISTING_VERSION="0.0.0"
-fi
-
 save_template_json() {
     cat <<EOF >${TEMPLATE_VERSION_FILE}
 {
@@ -213,6 +186,38 @@ create_directories() {
     mkdir -p /workspace/hub/models/SDXL/embeddings
 }
 
+start_nginx() {
+    echo "NGINX: Starting Nginx service..."
+    service nginx start
+}
+
+echo "PRE-START: START ---------------------------------------------------------------"
+
+export PYTHONUNBUFFERED=1
+
+TEMPLATE_NAME="stable-diffusion-webui"
+TEMPLATE_VERSION_FILE="/workspace/apps/stable-diffusion-webui/template.json"
+
+echo "TEMPLATE NAME: ${TEMPLATE_NAME}"
+echo "TEMPLATE VERSION: ${TEMPLATE_VERSION}"
+echo "VENV PATH: ${VENV_PATH}"
+
+if [[ -e ${TEMPLATE_VERSION_FILE} ]]; then
+    EXISTING_TEMPLATE_NAME=$(jq -r '.template_name // empty' "$TEMPLATE_VERSION_FILE")
+
+    if [[ -n "${EXISTING_TEMPLATE_NAME}" ]]; then
+        if [[ "${EXISTING_TEMPLATE_NAME}" != "${TEMPLATE_NAME}" ]]; then
+            EXISTING_VERSION="0.0.0"
+        else
+            EXISTING_VERSION=$(jq -r '.template_version // empty' "$TEMPLATE_VERSION_FILE")
+        fi
+    else
+        EXISTING_VERSION="0.0.0"
+    fi
+else
+    EXISTING_VERSION="0.0.0"
+fi
+
 echo "PRE-START: STRUCTURING DIRECTORIES ---------------------------------------------"
 create_directories
 
@@ -244,53 +249,55 @@ echo "START_KOHYA=${START_KOHYA}"
 echo "START_COMFYUI=${START_COMFYUI}"
 echo "START_INVOKEAI=${START_INVOKEAI}"
 
+start_nginx
+
 if [ ${START_CODE_SERVER} ]; then
-    echo "\n    ---- LAUNCHING: Code Server ----------------------------------------------"
+    echo "   ---- LAUNCHING: Code Server ----------------------------------------------"
     /workspace/configs/scripts/start_code_server.sh
 fi
 
 if [ ${START_JUPYTER} ]; then
-    echo "\n    ---- LAUNCHING: Jupyter ----------------------------------------------------"
+    echo "   ---- LAUNCHING: Jupyter ----------------------------------------------------"
     /workspace/configs/scripts/start_jupyter.sh
 fi
 
 if [ ${START_RISA_PLAYGROUND} ]; then
-    echo "\n    ---- LAUNCHING: Risa Playground ------------------------------------------"
+    echo "   ---- LAUNCHING: Risa Playground ------------------------------------------"
     /workspace/configs/scripts/start_risa_playground.sh
 fi
 
 if [ ${START_WEBDAV} ]; then
-    echo "\n    ---- LAUNCHING: WebDAV -----------------------------------------------------"
+    echo "   ---- LAUNCHING: WebDAV -----------------------------------------------------"
     /workspace/configs/scripts/start_webdav.sh
 fi
 
 if [ ${START_JUPYTER} ]; then
-    echo "\n    ---- LAUNCHING: Jupyter ----------------------------------------------------"
+    echo "   ---- LAUNCHING: Jupyter ----------------------------------------------------"
     /workspace/configs/scripts/start_jupyter.sh
 fi
 
 if [ ${START_TENSORBOARD} ]; then
-    echo "\n    ---- LAUNCHING: TensorBoard ------------------------------------------------"
+    echo "   ---- LAUNCHING: TensorBoard ------------------------------------------------"
     /workspace/configs/scripts/start_tensorboard.sh
 fi
 
 if [ ${START_A1111} ]; then
-    echo "\n    ---- LAUNCHING: A1111 ------------------------------------------------------"
+    echo "   ---- LAUNCHING: A1111 ------------------------------------------------------"
     /workspace/configs/scripts/start_a1111.sh
 fi
 
 if [ ${START_KOHYA} ]; then
-    echo "\n    ---- LAUNCHING: Kohya ------------------------------------------------------"
+    echo "   ---- LAUNCHING: Kohya ------------------------------------------------------"
     /workspace/configs/scripts/start_kohya.sh
 fi
 
 if [ ${START_COMFYUI} ]; then
-    echo "\n    ---- LAUNCHING: ComfyUI ----------------------------------------------------"
+    echo "   ---- LAUNCHING: ComfyUI ----------------------------------------------------"
     /workspace/configs/scripts/start_comfyui.sh
 fi
 
 if [ ${START_INVOKEAI} ]; then
-    echo "\n    ---- LAUNCHING: InvokeAI --------------------------------------------------"
+    echo "   ---- LAUNCHING: InvokeAI --------------------------------------------------"
     /workspace/configs/scripts/start_invokeai.sh
 fi
 

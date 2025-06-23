@@ -83,11 +83,6 @@ END
     fi
 }
 
-start_nginx() {
-    echo "NGINX: Starting Nginx service..."
-    service nginx start
-}
-
 execute_script() {
     local script_path=$1
     local script_msg=$2
@@ -140,13 +135,6 @@ export_env_vars() {
     echo "ENV: Exporting environment variables..."
     printenv | grep -E '^RUNPOD_|^PATH=|^_=' | awk -F = '{ print "export " $1 "=\"" $2 "\"" }' >>/etc/rp_environment
     echo 'source /etc/rp_environment' >>~/.bashrc
-}
-
-# Start Code Server
-start_code_server() {
-    echo "CODE-SERVER: Starting Code Server..."
-
-    echo "CODE-SERVER: Code Server started"
 }
 
 configure_filezilla() {
@@ -229,19 +217,16 @@ check_python_version() {
 # ---------------------------------------------------------------------------- #
 
 echo "Container Started, configuration in progress..."
-start_nginx
+
 setup_ssh
 start_cron
-# start_jupyter
-# start_code_server
 #check_cuda_version
 #test_pytorch_cuda
-#start_runpod_uploader
 export_env_vars
 
 if [ -f "/workspace/scripts/pre_start.sh" ]; then
     execute_script "/workspace/scripts/pre_start.sh" "PRE-START: Running pre-start script [from /workspace/scripts]..."
-else
+    else$()
     execute_script "/scripts/pre_start.sh" "PRE-START: Running pre-start script [from /scripts] [NOT WORKSPACE]..."
 fi
 
@@ -255,5 +240,9 @@ else
     execute_script "/scripts/post_start.sh" "POST-START: Running post-start script [from /scripts] [NOT WORKSPACE]..."
 fi
 
+echo ""
+echo ""
+echo "----------------------------------------"
+echo "----------------------------------------"
 echo "Container is READY!"
 sleep infinity
