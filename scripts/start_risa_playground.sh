@@ -12,7 +12,9 @@ git checkout dev
 
 echo "RISA PLAYGROUND: Installing dependencies..."
 source /workspace/.cache/venvs/risa/bin/activate
-poetry env use /workspace/.cache/venvs/risa/bin/python
+# Configure Poetry to use the existing virtual environment
+poetry config virtualenvs.create false
+poetry config virtualenvs.in-project false
 poetry install --no-interaction --no-ansi
 
 echo "RISA PLAYGROUND: Starting Risa Playground..."
