@@ -42,7 +42,8 @@
 <body>
 <div class="container mt-5">
   <div class="jumbotron">
-    <h1>The port is not up yet</h1>
+    <h1>Port <span class="port-number">XXXX</span> is not up yet</h1>
+    <h3 id="port-wait" class="mb-3" style="color:#FFD700;font-weight:bold;">Waiting for port: <span class="port-number">XXXX</span></h3>
     <h5>NOTE: This is not necessarily an error</h5>
     <h4 style="color:#FF6347">Check your container logs for the following:</h4>
     <ul class="lead">
@@ -55,7 +56,39 @@
       <li>Check your application logs (refer to the README for more information).</li>
     </ul>
     <button class="btn btn-primary" onclick="location.reload()">Refresh</button>
+    <p id="reload-msg" class="mt-3 text-light" style="opacity:0.8;font-size:1rem;">This page will automatically reload in <span id="reload-timer">15</span> seconds.</p>
   </div>
 </div>
+<script>
+  // Set port dynamically
+  (function() {
+    var port = window.location.port;
+    var hostname = window.location.hostname;
+    
+    // Check if hostname contains a port number (e.g., 6i48iz5irb17u4-3030.proxy.runpod.net)
+    var portMatch = hostname.match(/-(\d+)\./);
+    if (portMatch) {
+      port = portMatch[1];
+    } else if (!port) {
+      port = window.location.protocol === 'https:' ? '443' : '80';
+    }
+    
+    // Replace all instances of 'XXXX' with the port number
+    document.querySelectorAll('.port-number').forEach(function(element) {
+      element.textContent = port;
+    });
+
+  })();
+  var seconds = 15;
+  var timerSpan = document.getElementById('reload-timer');
+  var interval = setInterval(function() {
+    seconds--;
+    if (timerSpan) timerSpan.textContent = seconds;
+    if (seconds <= 0) {
+      clearInterval(interval);
+      location.reload();
+    }
+  }, 1000);
+</script>
 </body>
 </html>

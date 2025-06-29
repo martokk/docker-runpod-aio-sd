@@ -7,8 +7,9 @@ cd /workspace/apps/risa
 export HF_HOME="/workspace/.cache/huggingface"
 
 echo "RISA PLAYGROUND: Pulling latest changes..."
+git checkout dev -f
+git branch --set-upstream-to=origin/dev dev 2>/dev/null || true
 git pull
-git checkout dev
 
 echo "RISA PLAYGROUND: Installing dependencies..."
 source /workspace/.cache/venvs/risa/bin/activate
